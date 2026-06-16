@@ -1,24 +1,22 @@
-import os
+import os 
 import json
 import urllib.request
-
 
 def call_with_sdk():
     try:
         import anthropic
     except ImportError:
-        print("Install the SDK: pip install anthropic")
+        print("Install the SDK: uv pip install anthropic")
         return
 
     client = anthropic.Anthropic()
     response = client.messages.create(
         model="claude-haiku-4-5",
         max_tokens=256,
-        messages=[{"role": "user", "content": "What is a neural network in one sentence?"}]
+        messages=[{"role": "user", "content": "你是什么模型，你可以干什么?"}]
     )
     print(f"SDK response: {response.content[0].text}")
     print(f"Tokens used: {response.usage.input_tokens} in, {response.usage.output_tokens} out")
-
 
 def call_raw_http():
     api_key = os.environ.get("ANTHROPIC_API_KEY")
@@ -34,8 +32,8 @@ def call_raw_http():
     }
     body = json.dumps({
         "model": "claude-haiku-4-5",
-        "max_tokens": 256,
-        "messages": [{"role": "user", "content": "What is a neural network in one sentence?"}],
+        "max_tokens":256,
+        "messages": [{"role": "user", "content": "你是什么模型，你可以干什么?"}]
     }).encode()
 
     req = urllib.request.Request(url, data=body, headers=headers, method="POST")
@@ -44,10 +42,9 @@ def call_raw_http():
         print(f"Raw HTTP response: {result['content'][0]['text']}")
         print(f"Tokens used: {result['usage']['input_tokens']} in, {result['usage']['output_tokens']} out")
 
-
 if __name__ == "__main__":
-    print("=== API Calls ===\n")
-    print("1. Using the SDK:")
-    call_with_sdk()
-    print("\n2. Using raw HTTP:")
+    print("=== API Calls ===\n") 
+    # print("1.Using the SDK:")
+    # call_with_sdk()
+    print("\n2.Using raw HTTP:")
     call_raw_http()
