@@ -98,8 +98,8 @@ def check_gradient_health(model):
 
 
 def demo_print_debugging():
-    print("\n--- 1. Print Debugging for Tensors ---")
-    x = torch.randn(32, 784)
+    print("\n--- 1. Print Debugging for Tensors ---")   # 有一批输入数据
+    x = torch.randn(32, 784)    # 32：表示batch size 一次喂给模型32条样本   784：表示每条样本有784个数字。比如MNIST图片是28*28=784
     debug_print("input batch", x)
 
     w = torch.randn(784, 128)
