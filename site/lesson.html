@@ -2060,7 +2060,7 @@
 
       // 客户端逐课 SEO：动态设置 canonical / description / JSON-LD（LearningResource）
       function updateLessonSeo(title, md) {
-        var ORIGIN = 'https://aieng-zh.cn';
+        var ORIGIN = location.origin;  // 跟随部署域名:fork 部署时 canonical/og:url/JSON-LD 自动指向自己
         var path = new URLSearchParams(location.search).get('path') || '';
         if (!path) return;  // 防御：空 path 会生成 /lessons// 这种坏 canonical
         // canonical 指向预渲染静态页（SEO 主体）；旧 ?path= URL 仅作兼容入口
@@ -2076,6 +2076,8 @@
         set('meta[property="og:description"]', desc);
         set('meta[name="twitter:title"]', fullTitle);
         set('meta[name="twitter:description"]', desc);
+        set('meta[property="og:image"]', ORIGIN + '/og-image.png?v=2');   // 社交卡图跟随部署域名
+        set('meta[name="twitter:image"]', ORIGIN + '/og-image.png?v=2');
         var ogu = document.querySelector('meta[property="og:url"]');
         if (!ogu) { ogu = document.createElement('meta'); ogu.setAttribute('property', 'og:url'); document.head.appendChild(ogu); }
         ogu.setAttribute('content', url);
@@ -2191,7 +2193,11 @@
               body.innerHTML = '<video id="lvVideo" controls preload="none" playsinline></video>';
               body.querySelector('#lvVideo').src = entry.r2;
             } else {
-              body.innerHTML = '<iframe src="' + entry.bilibili + '" allowfullscreen loading="lazy"></iframe>';
+              // entry.bilibili 是裸 BV 号（投稿脚本回填的就是 bvid），需拼成 B 站播放器嵌入 URL，
+              // 否则裸 BV 当 iframe src 会被当相对路径解析成 404。
+              body.innerHTML = '<iframe src="//player.bilibili.com/player.html?bvid=' +
+                encodeURIComponent(entry.bilibili) + '&page=1&autoplay=0&high_quality=1" ' +
+                'scrolling="no" frameborder="no" allowfullscreen loading="lazy"></iframe>';
             }
           }
 
@@ -2223,6 +2229,8 @@
           srcBtns.forEach(function (btn) {
             btn.addEventListener('click', function () { setSource(btn.dataset.src); });
           });
+
+          openPlayer(); // 默认展开（preload="none" 仅显示外壳，不预下载，无带宽代价）
         }
 
         if (_videoManifest) { inject(_videoManifest); return; }
